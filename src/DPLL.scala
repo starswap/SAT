@@ -13,9 +13,13 @@ object DPLL extends SATSolver {
             }
         }
 
-    // def plp(f: CNF, a: Assignments): (CNF, Assignments) = {
-
-    // }
+    def plp(f: CNF, a: Assignments): (CNF, Assignments) = {
+        val pure_literals = f.flatten.sortBy(literal => literal.a)
+                             .groupBy(literal => literal.a)
+                             .filter((_, occurs) => occurs.forall(_.polarity) || occurs.forall(!_.polarity))
+                             .map((_, occurs) => occurs.head).toList
+        (f.filter(clause => clause.intersect(pure_literals).isEmpty), a ++ pure_literals)
+    }
 
     def dpll(f: CNF, a: Assignments): Option[Assignments] = {
         // bcp(F)
