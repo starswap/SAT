@@ -4,27 +4,27 @@ import org.scalatest.matchers.should.Matchers._
 
 class DPLLTest extends AnyFlatSpec {
     "BCP" should "infer proposition from unit clause" in {
-        val (f, a) = DPLL.bcp(List(List(Literal(true, "a"))), List())
-        a shouldBe List(Literal(true, "a"))
+        val (f, a) = DPLL.bcp(L(L(+"a")), L())
+        a shouldBe L(+"a")
     }
 
     it should "remove unit clause from formula" in {
-        val (f, a) = DPLL.bcp(List(List(Literal(true, "a"))), List())
-        f shouldBe List()
+        val (f, a) = DPLL.bcp(L(L(+"a")), L())
+        f shouldBe L()
     }
 
     it should "be able to process multiple unit clauses at a time" in {
-        val (f, a) = DPLL.bcp(List(List(Literal(true, "a")), List(Literal(false, "b")), List(Literal(true, "c"))), List())
-        a.toSet shouldBe List(Literal(true, "a"), Literal(false, "b"), Literal(true, "c")).toSet
+        val (f, a) = DPLL.bcp(L(L(+"a"), L(!"b"), L(+"c")), L())
+        a.toSet shouldBe L(+"a", !"b", +"c").toSet
     }
     
     it should "remove decided atoms from other clauses" in {
-        val (f, a) = DPLL.bcp(List(List(Literal(true, "a")), List(Literal(false, "b")), List(Literal(false, "a"), Literal(true, "b"), Literal(true, "c"), Literal(true, "d"))), List())
-        f shouldBe List(List(Literal(true, "c"), Literal(true, "d")))
+        val (f, a) = DPLL.bcp(L(L(+"a"), L(!"b"), L(!"a", +"b", +"c", +"d")), L())
+        f shouldBe L(L(+"c", +"d"))
     }
 
     it should "remove other clauses containing the decided atom" in {
-        val (f, a) = DPLL.bcp(List(List(Literal(true, "a")), List(Literal(true, "a"), Literal(false, "b"), Literal(true, "c"), Literal(true, "d")), List(Literal(true, "a"), Literal(false, "b"), Literal(true, "c"), Literal(true, "d"))), List())
-        f shouldBe List()
+        val (f, a) = DPLL.bcp(L(L(+"a"), L(+"a", !"b", +"c", +"d"), L(+"a", !"b", +"c", +"d")), L())
+        f shouldBe L()
     }
 }

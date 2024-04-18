@@ -1,7 +1,8 @@
 package SAT
 
-case class Literal(not: Boolean, a: Atom) {
-    def unary_! = Literal(!not, a)
+case class Literal(polarity: Boolean, a: Atom) {
+    def unary_! = Literal(!polarity, a)
+    override def toString(): String = if !polarity then s"¬{a}" else a
 }
 
 type Atom = String
